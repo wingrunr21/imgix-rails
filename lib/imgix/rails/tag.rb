@@ -139,12 +139,9 @@ private
   #
   # @return {Array} An array of {Fixnum} instances representing the unique `srcset` URLs to generate.
   def target_widths
-    min_screen_width_required = @options[:min_width] || SCREEN_STEP
-    max_screen_width_required = @options[:max_width] || MAXIMUM_SCREEN_WIDTH
-
-    widths = (device_widths + screen_widths).select do |w|
-      w <= max_screen_width_required && w >= min_screen_width_required
-    end.compact.uniq.sort
+    start_index = candidate_widths.find_index { |w| min_screen_width_required <= w } || 0
+    end_index = candidate_widths.find_index { |w| w >= max_screen_width_required } || candidate_widths.length
+    widths = candidate_widths.slice(start_index, end_index)
 
     # Add exact widths for 1x, 2x, and 3x devices
     if @options[:w]
@@ -170,5 +167,17 @@ private
   # @return {Array} An array of {Fixnum} instances
   def screen_widths
     (0..MAXIMUM_SCREEN_WIDTH).step(SCREEN_STEP).to_a + [MAXIMUM_SCREEN_WIDTH]
+  end
+
+  def min_screen_width_required
+    @min_screen_width_required ||= @options[:min_width] || SCREEN_STEP
+  end
+
+  def max_screen_width_required
+    @max_screen_width_required ||= @options[:max_width] || MAXIMUM_SCREEN_WIDTH
+  end
+
+  def candidate_widths
+    @candidate_widths ||= (device_widths + screen_widths).compact.uniq.sort
   end
 end

@@ -278,11 +278,11 @@ describe Imgix::Rails do
 
         context 'with max_width' do
           let(:tag) do
-            Nokogiri::HTML.fragment(helper.ix_image_tag("image.jpg", max_width: 100)).children[0]
+            Nokogiri::HTML.fragment(helper.ix_image_tag("image.jpg", max_width: 110)).children[0]
           end
 
           it 'generates the expected number of srcset values' do
-            expect(tag.attribute('srcset').value.split(',').size).to eq(1)
+            expect(tag.attribute('srcset').value.split(',').size).to eq(2)
           end
         end
 
